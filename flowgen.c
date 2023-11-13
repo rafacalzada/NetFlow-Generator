@@ -416,8 +416,15 @@ void init_exporter(const char *dst, u_int16_t port, u_int32_t flowrec_count)
 
   gettimeofday(&Ex.start, (struct timezone *)0);
 
-  /* XXX: assumes dst is in XXX.XXX.XXX.XXX format */
-  inet_aton(dst, &Ex.collector);
+  struct hostent *hstnm;
+  hstnm=gethostbyname(dst);
+ 
+  if (hstnm != NULL) {
+    Ex.collector = *(struct in_addr*)hstnm->h_addr;
+  } else { /* XXX: assumes dst is in XXX.XXX.XXX.XXX format */
+    inet_aton(dst, &Ex.collector);
+  }
+
 
   Ex.port = port;
 
